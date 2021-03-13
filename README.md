@@ -1,4 +1,4 @@
-# aws-pocs
-Repositório usado para ser usado como poc de serviços da AWS
+## Branch
+Essa branch é referente a uma POC de API Gateway Privado com acesso através de um VPC Endpoint.
 
-### Cada branch terá o seu próprio README.md com o seu respectivo escopo
+
