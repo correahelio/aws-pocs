@@ -28,7 +28,7 @@ Após baixar o arquivo (.pem) precisamos alterar a permissão dele. Nesse exempl
 - Navegue até o local do arquivo e execute o comando **chmod 400 nome_do_seu_arquivo.pem**
 - Abra as configurações da sua EC2 (Console da AWS) e espera ela estar com status 'Running'.
 - Pegue o IP Public dela.
-- Tente conectar na EC2 através do seguinte comando **ssh -i <nome_do_seu_arquivo.pem> ec2-user@<ip_publico_da_ec2>
+- Tente conectar na EC2 através do seguinte comando **ssh -i <nome_do_seu_arquivo.pem> ec2-user@<ip_publico_da_ec2>**
 Obs.: Proavelmente você vai tomar erro de timeout devido a falta de configuração do Security Group.
 
 3. Vamos liberar acesso nessa EC2 para nosso SG (Security Group)
@@ -41,7 +41,10 @@ Obs.: Proavelmente você vai tomar erro de timeout devido a falta de configuraç
 Obs.: Se o ssh perguntar sobre a chave fingerprint digite 'yes'
 
 Nesse momento vc deve estar conectado na máquina:
+
 ![image](https://user-images.githubusercontent.com/22084402/111014832-69ddd700-8384-11eb-894e-448411ba8f65.png)
+
+
 
 
 
