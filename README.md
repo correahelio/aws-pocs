@@ -85,6 +85,7 @@ Após criar o VPC Endpoint, anote a url de DNS:
 
 
 **6. Testando o VPC Endpoint e verificando SG (security group)**
+
 Conecte na sua EC2.
 Lembre-se que se vc reiniciou ela, provavelmente ela subiu com outro IP interno.
 Lembre-se que se vc reiniciou seu PC, provavelmente ele trocou seu IP local, portanto, é necessário reconfigurar o SG de acesso na EC2.
