@@ -13,14 +13,19 @@ Quando temos um API Gateway Privado (AWS) não conseguimos acessar ele pela inte
 * **APIGateway**: É o nosso serviço principal nessa POC.
 * **Lambda**: Faremos uma integração com Lambda para verificarmos a diferença de respostas
 
-1. Vamos começar com a VPC e EC2.
+**1. Vamos começar com a VPC e EC2**
 
 Crie uma VPC e dê um nome para ela. Se ela não for sua Default VPC pode ser que ela não tenha configuração de saída para internet.
 Para essa POC acredito não ser um problema (porque a comunicação com o api gateway será privada), mas lembre-se disso durante os testes.
 
-2. Crie uma EC2. No exemplo abaixo criamos uma EC2 com imagem 'Amazon Linux 2 AMI'.
+**2. Crie uma EC2**
+No exemplo abaixo criamos uma EC2 com imagem 'Amazon Linux 2 AMI'.
 Aqui precisamos ter alguns pontos de atenção:
 - Essa EC2 precisa ter IP Publico (para que vc consiga conectar-se nela)
+
+Obs.: Se vc esqueceu de criar ela para ter IP Público, terá que criar outra EC2.
+      Caso tenha criado errado, lembre-se de usar o comando 'Terminate' para matar a EC2 criada errada. Se vc apensar usar o 'Stop', vc pagará pelo EBS (disco) da EC2 mesmo com ela desligada.
+
 - Vc vai precisar de uma chave (.pem) para conectar-se na EC2.
 - Security Group pode deixar padrão, ou criar um. Alteraremos ele na sequência.
 
@@ -31,7 +36,7 @@ Após baixar o arquivo (.pem) precisamos alterar a permissão dele. Nesse exempl
 - Tente conectar na EC2 através do seguinte comando **ssh -i <nome_do_seu_arquivo.pem> ec2-user@<ip_publico_da_ec2>**
 Obs.: Proavelmente você vai tomar erro de timeout devido a falta de configuração do Security Group.
 
-3. Vamos liberar acesso nessa EC2 para nosso SG (Security Group)
+**3. Vamos liberar acesso nessa EC2 para nosso SG (Security Group)**
 - Dentro do menu EC2 vc vai encontrar a opção 'Security Groups'. Abra o seu Security Group e veja as regras de Inbound.
 
 ![image](https://user-images.githubusercontent.com/22084402/111014742-f9cf5100-8383-11eb-80bc-6449596d33c9.png)
@@ -43,6 +48,58 @@ Obs.: Se o ssh perguntar sobre a chave fingerprint digite 'yes'
 Nesse momento vc deve estar conectado na máquina:
 
 ![image](https://user-images.githubusercontent.com/22084402/111014832-69ddd700-8384-11eb-894e-448411ba8f65.png)
+
+**4. Crie um APIGateway Privado**
+
+![image](https://user-images.githubusercontent.com/22084402/111029027-39745800-83d9-11eb-80f4-a11e092359e2.png)
+
+
+Preencha as informações necessárias para criar o APIGateway e nesse momento, vamos deixar o APIGateway criar 'api de exemplo' para nós.
+
+![image](https://user-images.githubusercontent.com/22084402/111029060-632d7f00-83d9-11eb-98d4-411652a12c0f.png)
+
+**5. Crie um VPC Endpoint**
+
+No serviço VPC, vc encontrará o menu "Endpoints".
+
+Crie um Endpoint do tipo API Gateway 'com.amazonaws.<region>.execute-api':
+![image](https://user-images.githubusercontent.com/22084402/111029339-029f4180-83db-11eb-9dc0-71c850ddf211.png)
+
+Preencha as informações. Sugiro criar um outro Security Group, explicaremos o motivo depois. Anote o nome do Security Group.
+
+Referente a policy, pode deixar 'Full Access'. Não é o ideal, mas como ele será privado (acesso através da VPC) e isso é uma POC, podemos deixar assim.
+
+Obs.: Se vc não conseguir criar o VPC Endpoint porque a sua VPC não permite resolução de DNS, volte para a VPC.
+Habilite a opção 'DNS Hostnames'
+![image](https://user-images.githubusercontent.com/22084402/111029594-42b2f400-83dc-11eb-98cb-d5e0fd6a5b79.png)
+
+Habiliate a opção 'DNS Resolution'
+![image](https://user-images.githubusercontent.com/22084402/111029606-5a8a7800-83dc-11eb-9948-738405fd015f.png)
+
+
+Volte no VPC Endpoint e tente criá-lo novamente.
+
+Após criar o VPC Endpoint, anote a url de DNS:
+![image](https://user-images.githubusercontent.com/22084402/111029653-9291bb00-83dc-11eb-8607-8c186b5e4dc3.png)
+
+
+
+**6. Testando o VPC Endpoint e verificando SG (security group)**
+Conecte na sua EC2.
+Lembre-se que se vc reiniciou ela, provavelmente ela subiu com outro IP interno.
+Lembre-se que se vc reiniciou seu PC, provavelmente ele trocou seu IP local, portanto, é necessário reconfigurar o SG de acesso na EC2.
+
+No exemplo abaixo, vamos utilizar o Postman para montarmos os requests. Facilitará nossa vida para copiarmos o request pronto durante os testes.
+
+
+
+
+
+
+
+
+
+
 
 
 
