@@ -104,7 +104,9 @@ Monte a url no postman e depois clique em Code.
 ![image](https://user-images.githubusercontent.com/22084402/111054103-8ba09200-8448-11eb-84f4-b4ab79c4f47e.png)
 
 Repare que a URL abaixo é composta do endpoint é composta da seguinte maneira:
+
 https://<vpc_endpoint>/<stg_api_gateway>/<rota_api_gateway>
+
 https://vpce-032ae4eee4be64031-vatu67qs.execute-api.us-east-1.vpce.amazonaws.com/dev/store
 
 Copie o comando e execute de dentro da sua EC2.
