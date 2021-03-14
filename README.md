@@ -266,44 +266,4 @@ Estamos usando o mesmo VPC Endpoint chamando outro gateway. A única diferença 
 
 Esse segundo gateway não tem plano de uso, portanto, apenas informar o ID do gateway é o suficinet para funcionar!
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### **Lembre-se de deletar a EC2 e os outros recursos no final da POC**
