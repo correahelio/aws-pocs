@@ -63,6 +63,67 @@ Faça deploy do seu gateway. Durante o primeiro deploy vai ser necessário criar
 
 ![image](https://user-images.githubusercontent.com/22084402/111054067-26e53780-8448-11eb-81e6-3c3ffbe704d9.png)
 
+Quando vc for fazer o deploy do API Gateway encontrará a seguinte mensagem de erro: 'Private REST API doesn't have a resource policy attached to it'.
+
+Pelo fato de ser um gateway privado temos que definir a Policy de uso antes de criarmos o stage.
+
+No menu da esquerda abra a opção 'Resource Policy'.
+
+Cole a Policy abaixo (é parecida com o exemplo que a AWS mostra se vc clicar no botão 'Source VPC Allowlist'.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": "arn:aws:execute-api:<region>:<account_id>:<id_gateway>/*"
+        },
+        {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": "arn:aws:execute-api:<region>:<account_id>:<id_gateway>/*",
+            "Condition": {
+                "StringNotEquals": {
+                    "aws:SourceVpc": "<vpc_id>"
+                }
+            }
+        }
+    ]
+}
+```   
+
+Caso não saiba como pegar os valores acima:
+
+**Region:** fica no canto superior direito
+
+![image](https://user-images.githubusercontent.com/22084402/111071653-f0460600-84b5-11eb-9183-c9cb84bb13d9.png)
+
+Nesse caso o region vai ser 'us-east-1'.
+
+**ID do Gateway:**
+
+![image](https://user-images.githubusercontent.com/22084402/111071673-0653c680-84b6-11eb-9d3d-f207e7f1457c.png)
+
+
+**Account ID:**
+Clique no menu superior (perto da region) onde fica o seu usuário, uma das opções que serão exibida é o account ID ('My Account').
+
+
+**VPC_ID**:
+Abra o menu da VPC e veja o ID da mesma.
+
+
+Volte no menu Resources do gateway e faça o deploy novamente.
+
+Como é um gateway de testes, eu tenho custome de alterar a capacidade de Throttling:
+
+![image](https://user-images.githubusercontent.com/22084402/111071630-d1477400-84b5-11eb-802f-c74e244ab84d.png)
+
+
 
 **5. Crie um VPC Endpoint**
 
@@ -119,8 +180,12 @@ Abra o Security Group que vc colocou durante a criação do VPC Link e adicione 
 
 Estamos liberando a porta HTTPS onde a origem seja o Security Group que a EC2 utiliza. Portanto, só quem está dentro desse Security Group conseguirá acesasr o VPC Endpoint.
 
-Repita o teste e perceba que a mensagem de erro agora é 'Forbidden'. Isso significa que o VPC Endpoint está redirecionando a chamada para o Gateway, porém, ainda estamos sem acesso.
+Repita o teste e perceba que a mensagem de erro agora é 'Forbidden'. Isso significa que o VPC Endpoint está redirecionando a chamada para o Gateway, porém, agora o Gateway está dando acesso negado.
 
+**8. Definindo plano de uso do APIGateway**
+
+
+Abra o gateway e vá até o menu 'Usage Plans'.
 
 
 
