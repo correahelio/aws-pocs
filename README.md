@@ -58,6 +58,12 @@ Preencha as informações necessárias para criar o APIGateway e nesse momento, 
 
 ![image](https://user-images.githubusercontent.com/22084402/111029060-632d7f00-83d9-11eb-98d4-411652a12c0f.png)
 
+
+Faça deploy do seu gateway. Durante o primeiro deploy vai ser necessário criar um 'stage'. O 'stage' é o local onde os seus recursos realmente ficam disponíveis para uso. Toda vez que uma rota é criado / alterada, se não fizer o Deploy em 'stage' sua mudança não será refletida. 
+
+![image](https://user-images.githubusercontent.com/22084402/111054067-26e53780-8448-11eb-81e6-3c3ffbe704d9.png)
+
+
 **5. Crie um VPC Endpoint**
 
 No serviço VPC, vc encontrará o menu "Endpoints".
@@ -83,14 +89,40 @@ Após criar o VPC Endpoint, anote a url de DNS:
 ![image](https://user-images.githubusercontent.com/22084402/111029653-9291bb00-83dc-11eb-8607-8c186b5e4dc3.png)
 
 
-
-**6. Testando o VPC Endpoint e verificando SG (security group)**
+**7. Testando o VPC Endpoint e verificando SG (security group)**
 
 Conecte na sua EC2.
 Lembre-se que se vc reiniciou ela, provavelmente ela subiu com outro IP interno.
 Lembre-se que se vc reiniciou seu PC, provavelmente ele trocou seu IP local, portanto, é necessário reconfigurar o SG de acesso na EC2.
 
 No exemplo abaixo, vamos utilizar o Postman para montarmos os requests. Facilitará nossa vida para copiarmos o request pronto durante os testes.
+
+Lembrando que por tratarmos de um API Gateway Privado não conseguirmos acessar o enedreço do gateway diretamente. Por isso, temos que acessá-lo através do endereço VPC Endpoint.
+
+Monte a url no postman e depois clique em Code.
+
+![image](https://user-images.githubusercontent.com/22084402/111054103-8ba09200-8448-11eb-84f4-b4ab79c4f47e.png)
+
+Repare que a URL abaixo é composta do endpoint é composta da seguinte maneira:
+https://<vpc_endpoint>/<stg_api_gateway>/<rota_api_gateway>
+https://vpce-032ae4eee4be64031-vatu67qs.execute-api.us-east-1.vpce.amazonaws.com/dev/store
+
+Copie o comando e execute de dentro da sua EC2.
+
+Repare que vc vai ver um erro de timeout. Isso ocorre porque o Security Group do VPC Link não permite acesso.
+
+Abra o Security Group que vc colocou durante a criação do VPC Link e adicione a seguinte regra:
+
+![image](https://user-images.githubusercontent.com/22084402/111054157-e33efd80-8448-11eb-9c44-27780b277dc2.png)
+
+Estamos liberando a porta HTTPS onde a origem seja o Security Group que a EC2 utiliza. Portanto, só quem está dentro desse Security Group conseguirá acesasr o VPC Endpoint.
+
+Repita o teste e perceba que a mensagem de erro agora é 'Forbidden'. Isso significa que o VPC Endpoint está redirecionando a chamada para o Gateway, porém, ainda estamos sem acesso.
+
+
+
+
+
 
 
 
