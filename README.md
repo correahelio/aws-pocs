@@ -180,13 +180,110 @@ Abra o Security Group que vc colocou durante a criação do VPC Link e adicione 
 
 Estamos liberando a porta HTTPS onde a origem seja o Security Group que a EC2 utiliza. Portanto, só quem está dentro desse Security Group conseguirá acesasr o VPC Endpoint.
 
-Repita o teste e perceba que a mensagem de erro agora é 'Forbidden'. Isso significa que o VPC Endpoint está redirecionando a chamada para o Gateway, porém, agora o Gateway está dando acesso negado.
+Repita o teste e vc verá a seguinte mensagem de erro 'Forbidden'. Isso significa que a requisição chegou até o VPC Endpoint mas o Endpoint não sabe qual gateway deve ser chamado. 
+
+Para isso, será necessário adicionar o id do gateway no header da nossa chamada através do parâmetro 'x-apigw-api-id'
+
+![image](https://user-images.githubusercontent.com/22084402/111075204-9ea57780-84c5-11eb-86e3-362dbd7b4044.png)
+
+
+Repita o teste e veja que funcionou.
+
+![image](https://user-images.githubusercontent.com/22084402/111075130-3e163a80-84c5-11eb-85cb-cd6853d51e95.png)
+
 
 **8. Definindo plano de uso do APIGateway**
 
+Nesse momento, não temos ainda garantia de quem está chamando o Gateway. A única restrição que colocamos é que a origem seja da VPC permitada.
 
-Abra o gateway e vá até o menu 'Usage Plans'.
+Porém, é possível definir plano de uso para o gateway.
 
+Para isso, abra o gateway e vá até o menu 'Usage Plans'. Crie um plano de uso:
+
+![image](https://user-images.githubusercontent.com/22084402/111072176-21bfd100-84b8-11eb-871b-7f5d4a03114b.png)
+
+
+Na próxima tela escolha o gateway e stage que o plano de uso deve ser vinculado:
+
+![image](https://user-images.githubusercontent.com/22084402/111072205-474cda80-84b8-11eb-964f-60a9d95366f4.png)
+
+
+E na última tecla, crie uma chave para ser usada através desse plano de uso.
+
+![image](https://user-images.githubusercontent.com/22084402/111072220-5c296e00-84b8-11eb-81ff-cbc4ca882ffc.png)
+
+
+**9. Testando o VPC Endpoint com plano de uso**
+
+Conecte na ec2, e monte a url no postman.
+
+Reparou que ainda teremos o mesmo cenário de sucesso ?
+
+Legal, mas a chave que nós definimos já não está sendo usada  ?
+A resposta é Não, ela só será usada se vc proteger sua rota.
+
+Para isso, abra a rota dentro do menu Resources e abra o Method Request. Altere o combo 'API Key Required' para true.
+
+![image](https://user-images.githubusercontent.com/22084402/111074421-8e8b9900-84c1-11eb-8ad4-da03bf763db8.png)
+
+Não esqueça de fazer deploy do gateway. Lembre-se que após o deploy o gateway demora alguns segundos para refletir as mudanças.
+
+A partir disso, vc verá novamente a mensagem de erro 'Forbidden'.
+
+Adicione a sua chave através do header 'x-api-key' e repita o teste.
+
+![image](https://user-images.githubusercontent.com/22084402/111074454-c5fa4580-84c1-11eb-9392-c9f7dbb05e56.png)
+
+Voltou a funcionar. Portanto, o nosso método GET /pets está protegido através da chave com o plano de uso definido.
+
+
+**10. Testando o mesmo VPC Endpoint com outro APIGateway**
+
+Vamos criar um outro Gateway para testarmos o mesmo VPC Endpoint. Porém, como já utilizamos o gateway de exemplo, vamos criar um Lambda.
+
+Crie um lambda na AWS que ele já vem com o 'hello-world' de exemplo.
+
+![image](https://user-images.githubusercontent.com/22084402/111074506-0659c380-84c2-11eb-933d-55ac67cacf67.png)
+
+
+Crie um outro API Gateway Privado só que dessa vez crie um 'New API' para que ele não crie os exemplos.
+![image](https://user-images.githubusercontent.com/22084402/111074557-35703500-84c2-11eb-8171-b7d7b4d8641a.png)
+
+Crie um recurso e depois um método GET.
+
+![image](https://user-images.githubusercontent.com/22084402/111074578-53d63080-84c2-11eb-9084-32cae1b8ed55.png)
+
+
+Lembre-se de alterar a Policy do gateway por ser privado e lembre-se de fazer deploy do gateway. Nesse exemplo criei um stage chamado 'dev2', apenas para facilitar a leitura.
+
+![image](https://user-images.githubusercontent.com/22084402/111074709-04443480-84c3-11eb-8bb7-ba479c2a1f8d.png)
+
+Repare que o que mudou na URL é o stage e a rota do novo gateway que agora chama-se /lambda.
+
+![image](https://user-images.githubusercontent.com/22084402/111075371-808c4700-84c6-11eb-8efc-c66b7de0b1b6.png)
+
+Estamos usando o mesmo VPC Endpoint chamando outro gateway. A única diferença é o ID do Gateway informado no header do request.
+
+Esse segundo gateway não tem plano de uso, portanto, apenas informar o ID do gateway é o suficinet para funcionar!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 
 
